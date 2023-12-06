@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "my-nextron-app",
-  "description": "My application description",
-  "version": "1.0.0",
-  "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
+  "name": "imgd-arcade",
+  "description": "IMGD Arcade UI",
+  "version": "0.0.1",
+  "author": "Mikel Matticoli",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",

@@ -16,6 +16,8 @@ if (isProd) {
   const mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
+    fullscreen: true,
+    autoHideMenuBar: true,
   });
 
   if (isProd) {
@@ -25,8 +27,7 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
-  mainWindow.autoHideMenuBar = true;
-  mainWindow.setFullScreen(true);
+
 })();
 
 app.on('window-all-closed', () => {

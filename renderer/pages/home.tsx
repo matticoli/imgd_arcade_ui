@@ -19,7 +19,14 @@ function Home() {
     const handleClose = () => setOpen(false);
     const handleClick = () => setOpen(true);
 
-    const input = useInput({});
+    const {inputState, keyboard, gamepad} = useInput({
+        "left": {keyCode: "ArrowLeft"},
+        "right": {keyCode: "ArrowRight"},
+        "up": {keyCode: "ArrowUp"},
+        "down": {keyCode: "ArrowDown"},
+    }, (evt) => {
+        console.log(evt);
+    });
 
     return (
         <React.Fragment>
