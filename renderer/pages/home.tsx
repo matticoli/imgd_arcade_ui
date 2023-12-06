@@ -24,9 +24,10 @@ function Home() {
         "right": {keyCode: "ArrowRight"},
         "up": {keyCode: "ArrowUp"},
         "down": {keyCode: "ArrowDown"},
+        "home": {keyCode: "Esc"},
     }, (evt) => {
         console.log(evt);
-    });
+    }, true);
 
     return (
         <React.Fragment>

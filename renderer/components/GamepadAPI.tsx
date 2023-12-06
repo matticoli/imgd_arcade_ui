@@ -33,7 +33,8 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
           }
         }
       });
-      // console.log(gp.buttons);
+      if(debug)
+        console.log(gp.buttons);
     }
 
     useEffect(() => {
@@ -58,7 +59,8 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
           // Drop repeat events
           return;
         }
-        // console.log(`${evt.type} ${evt.key}`);
+        if(debug)
+          console.log(`${evt.type} ${evt.key}`);
 
         const configedKeys = Object.entries(config).filter(([_axisKey, {keyCode}]) => keyCode == evt.key);
         if(configedKeys.length > 0) {
