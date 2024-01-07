@@ -54,7 +54,7 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
       }
 
       function handleKeyEvent(evt: KeyboardEvent) {
-        // TODO: check config and call event for keycode
+        // Check config and update state, then call handler for keycode
         if(evt.repeat) {
           // Drop repeat events
           return;

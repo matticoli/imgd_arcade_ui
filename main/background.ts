@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, session } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 
@@ -19,6 +19,8 @@ if (isProd) {
     fullscreen: true,
     autoHideMenuBar: true,
   });
+
+  session.defaultSession.setDevicePermissionHandler((_) => true);
 
   if (isProd) {
     await mainWindow.loadURL('app://./home.html');

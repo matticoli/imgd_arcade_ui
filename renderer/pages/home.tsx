@@ -24,9 +24,15 @@ function Home() {
         "right": {keyCode: "ArrowRight"},
         "up": {keyCode: "ArrowUp"},
         "down": {keyCode: "ArrowDown"},
-        "home": {keyCode: "Esc"},
+        "home": {keyCode: "Escape"},
     }, (evt) => {
+        console.log("Event handler");
         console.log(evt);
+        if(evt.key == 'home' && evt.value == 1) {
+            const d = new Date();
+            d.setSeconds(d.getSeconds() + 5);
+            
+        }
     }, true);
 
     return (
@@ -47,7 +53,7 @@ function Home() {
                     https://imgdhub.wpi.edu/lore/arcade
                 </Typography>
                 <div style={{display: "flex", flexDirection: "row", margin: 20, gap: 10, alignContent: "center"}}>
-                    <Button variant="contained" style={{display: "flex", flexDirection: "column", padding: 5}} href='/game/0'>
+                    <Button variant="contained" style={{display: "flex", flexDirection: "column", padding: 5}} href='/game?id=8275100'>
                         <img src="https://img.itch.zone/aW1nLzEyNzM0MDI2LnBuZw==/315x250%23c/%2BKpN4e.png" />
                         <Typography>Elephant in the Room</Typography>
                     </Button>
