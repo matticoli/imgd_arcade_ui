@@ -1,4 +1,5 @@
 import { app, session } from 'electron';
+import electron from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 
@@ -16,12 +17,21 @@ if (isProd) {
   session.defaultSession.setDevicePermissionHandler((_) => true);
   session.defaultSession.setPermissionCheckHandler((_) => true);
 
+  const filter = {
+    urls: ['*://*.google.com/*']
+  };
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+      details.requestHeaders['Origin'] = null;
+      callback({ requestHeaders: details.requestHeaders })
+  });
+
   const mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
     fullscreen: true,
     autoHideMenuBar: true,
   });
+
   if (isProd) {
     await mainWindow.loadURL('app://./home.html');
   } else {
