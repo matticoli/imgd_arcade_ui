@@ -27,7 +27,7 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
         if(buttonIndex) {
           const newVal = gp.buttons[buttonIndex].value;
           if(gamepad.current[buttonIndex] != newVal) {
-            gamepad.current[axisKey] = newVal;
+            gamepad.current[buttonIndex] = newVal;
             inputState.current[axisKey] = newVal;
             handler({key: axisKey, value: newVal});
           }
@@ -54,7 +54,6 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
       }
 
       function handleKeyEvent(evt: KeyboardEvent) {
-        // TODO: check config and call event for keycode
         if(evt.repeat) {
           // Drop repeat events
           return;

@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, session } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 
@@ -13,13 +13,15 @@ if (isProd) {
 (async () => {
   await app.whenReady();
 
+  session.defaultSession.setDevicePermissionHandler((_) => true);
+  session.defaultSession.setPermissionCheckHandler((_) => true);
+
   const mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
     fullscreen: true,
     autoHideMenuBar: true,
   });
-
   if (isProd) {
     await mainWindow.loadURL('app://./home.html');
   } else {
