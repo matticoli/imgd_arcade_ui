@@ -15,21 +15,21 @@ const Root = styled('div')(({ theme }) => {
 
 function Home() {
     const [open, setOpen] = React.useState(false);
-    const [loading, setLoading] = React.useState(true);
+    const [loading, setLoading] = React.useState(false);
     const handleClose = () => setOpen(false);
     const handleClick = () => setOpen(true);
     const [selectedGame, setSelectedGame] = useState(null);
 
-    const [games, setGames] = useState([]);
+    const [games, setGames] = useState([{"link":"https://jingruchenmax.itch.io/arcade-key-binding","title":"arcade key binding by jingruchenmax","embed":"9710961","cover":"https://avatars.githubusercontent.com/u/36019727?v=4"}]);
 
-    useEffect(() => {
-        fetch("/api/gameinfo").then(async (res) => {
-            setGames((await res.json()).games);
-            setLoading(false);
-        }).catch(() => {
-            setLoading(false);
-        });
-    }, []);
+    // useEffect(() => {
+    //     fetch("/api/gameinfo").then(async (res) => {
+    //         setGames((await res.json()).games);
+    //         setLoading(false);
+    //     }).catch(() => {
+    //         setLoading(false);
+    //     });
+    // }, []);
 
     const { inputState } = useInput({
         "left": { keyCode: "ArrowLeft" },

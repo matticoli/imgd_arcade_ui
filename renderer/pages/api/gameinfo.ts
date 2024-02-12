@@ -11,8 +11,8 @@ type ResponseData = {
   games: Array<Game>
 }
 
-const itchLinks = ["https://matticoli.itch.io/elephant-in-the-room"];
- 
+const itchLinks = ["https://jingruchenmax.itch.io/arcade-key-binding"];
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>

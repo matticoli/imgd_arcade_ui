@@ -38,7 +38,6 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
             handler({key: axisKey, value: newVal});
           }
         }
-        
       });
       if(debug)
         console.log(gp.buttons);
