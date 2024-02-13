@@ -51,7 +51,7 @@ function Home() {
         // Button down
         if(evt.value == 1) {
             if(evt.key == "a" && !!selectedGame) {
-                router.push(`/game?id=${selectedGame.embed}`);
+                window.location.href = `/game?id=${selectedGame.embed}`;
             } else if(evt.key == "down" || evt.key == "right" || (evt.key == "ay" && evt.value > 0)) {
                 if(!!selectedGame) {
                     const index = games.indexOf(selectedGame) + 1;

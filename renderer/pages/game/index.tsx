@@ -26,7 +26,7 @@ const GamePage: NextPage = () => {
       const time = (timeLeft: number) => {
         setTimeLeft(timeLeft)
         if(timeLeft <= 0) {
-          router.push("/home");
+          window.location.href = "/home";
         } else {
           setDelay(setTimeout(() => time(timeLeft - TIMER_INTERVAL), TIMER_INTERVAL));
         }
