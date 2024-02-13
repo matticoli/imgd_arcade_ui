@@ -2,7 +2,7 @@
   "private": true,
   "name": "imgd-arcade",
   "description": "IMGD Arcade UI",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Mikel Matticoli",
   "main": "app/background.js",
   "scripts": {
