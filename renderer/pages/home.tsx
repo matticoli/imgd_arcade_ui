@@ -96,7 +96,7 @@ function Home() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, justifyContent: "center", alignItems: "center" }}>
                     {loading && <div className='lds-dual-ring'></div>}
                     {games.map(g => <div key={g.embed} style={{ maxWidth: "45%", margin: "2.5%"}}>
-                        <Button variant="contained" style={{width: '325', margin: 'auto', display: "flex", flexDirection: "column", padding: 5, paddingTop: 15 }} href={`/game/${g.embed}`}>
+                        <Button variant="contained" style={{width: '325', margin: 'auto', display: "flex", flexDirection: "column", padding: 5, paddingTop: 15 }} href={`/game?id=${g.embed}`}>
                             <img src={g.cover} style={{maxWidth: "95%"}} />
                             <Typography>{g.title}</Typography>
                         </Button>
