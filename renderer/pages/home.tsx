@@ -5,6 +5,8 @@ import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 
 import useInput from "../components/GamepadAPI";
+import { useRouter } from 'next/router';
+import { setEnvironmentData } from 'worker_threads';
 
 const Root = styled('div')(({ theme }) => {
     return {
@@ -14,14 +16,19 @@ const Root = styled('div')(({ theme }) => {
 })
 
 function Home() {
+    const router = useRouter();
     const [open, setOpen] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const handleClose = () => setOpen(false);
     const handleClick = () => setOpen(true);
     const [selectedGame, setSelectedGame] = useState(null);
+    const [evt, setEvt] = useState({key: "", value: -1});
 
-    const [games, setGames] = useState([{"link":"https://jingruchenmax.itch.io/arcade-key-binding","title":"arcade key binding by jingruchenmax","embed":"9710961","cover":"https://avatars.githubusercontent.com/u/36019727?v=4"}]);
+    const [games, setGames] = useState([
+        { "link": "https://jingruchenmax.itch.io/arcade-key-binding", "title": "arcade key binding by jingruchenmax", "embed": "9710961", "cover": "https://avatars.githubusercontent.com/u/36019727?v=4" },
+    ]);
 
+    // TODO: Fetch game info from remote
     // useEffect(() => {
     //     fetch("/api/gameinfo").then(async (res) => {
     //         setGames((await res.json()).games);
@@ -31,7 +38,39 @@ function Home() {
     //     });
     // }, []);
 
-    const { inputState } = useInput({
+    const selectGame = (game) => {
+        setSelectedGame(game);
+        try {
+            document.getElementById(`game-${game.embed}`).focus();
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(() => {
+        // Button down
+        if(evt.value == 1) {
+            if(evt.key == "a" && !!selectedGame) {
+                router.push(`/game?id=${selectedGame.embed}`);
+            } else if(evt.key == "down" || evt.key == "right") {
+                if(!!selectedGame) {
+                    const index = games.indexOf(selectedGame) + 1;
+                    selectGame(games[index >= games.length ? 0 : index]);
+                } else {
+                    selectGame(games[0]);
+                }
+            } else if(evt.key == "up" || evt.key == "left") {
+                if(!!selectedGame) {
+                    const index = games.indexOf(selectedGame) - 1;
+                    selectGame(games[index < 0 ? games.length - 1 : index]);
+                } else {
+                    selectGame(games[games.length - 1]);
+                }
+            }
+        }
+    }, [evt]);
+
+    useInput({
         "left": { keyCode: "ArrowLeft" },
         "right": { keyCode: "ArrowRight" },
         "up": { keyCode: "ArrowUp" },
@@ -39,11 +78,12 @@ function Home() {
         "ax": { analogAxis: 0 },
         "ay": { analogAxis: 1 },
         "home": { keyCode: "Escape", buttonIndex: 6 },
-        "a": { keyCode: "j", buttonIndex: 3 },
+        "a": { keyCode: "j", buttonIndex: 0 },
         "b": { keyCode: "k", buttonIndex: 1 },
         "x": { keyCode: "l", buttonIndex: 2 },
     }, (evt) => {
         console.log(evt);
+        setEvt(evt);
     });
 
     return (
@@ -51,7 +91,7 @@ function Home() {
             <Head>
                 <title>IMGD Arcade</title>
                 <style>
-                {`
+                    {`
                     .lds-dual-ring {
                     display: inline-block;
                     width: 80px;
@@ -95,9 +135,15 @@ function Home() {
                 </Typography>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, justifyContent: "center", alignItems: "center" }}>
                     {loading && <div className='lds-dual-ring'></div>}
-                    {games.map(g => <div key={g.embed} style={{ maxWidth: "45%", margin: "2.5%"}}>
-                        <Button variant="contained" style={{width: '325', margin: 'auto', display: "flex", flexDirection: "column", padding: 5, paddingTop: 15 }} href={`/game?id=${g.embed}`}>
-                            <img src={g.cover} style={{maxWidth: "95%"}} />
+                    {games.map(g => <div key={g.embed} style={{ maxWidth: "45%", margin: "2.5%" }}>
+                        <Button variant="contained"
+                                color={selectedGame && g.embed == selectedGame.embed ? "secondary" : "primary"}
+                                id={`game-${g.embed}`}
+                                onMouseOver={() => setSelectedGame(g)}
+                                onMouseOut={() => setSelectedGame(null)}
+                                style={{ width: '325', margin: 'auto', display: "flex", flexDirection: "column", padding: 5, paddingTop: 15 }}
+                                href={`/game?id=${g.embed}`}>
+                            <img src={g.cover} style={{ maxWidth: "95%" }} />
                             <Typography>{g.title}</Typography>
                         </Button>
                     </div>)}
