@@ -52,14 +52,14 @@ function Home() {
         if(evt.value == 1) {
             if(evt.key == "a" && !!selectedGame) {
                 router.push(`/game?id=${selectedGame.embed}`);
-            } else if(evt.key == "down" || evt.key == "right") {
+            } else if(evt.key == "down" || evt.key == "right" || (evt.key == "ay" && evt.value > 0)) {
                 if(!!selectedGame) {
                     const index = games.indexOf(selectedGame) + 1;
                     selectGame(games[index >= games.length ? 0 : index]);
                 } else {
                     selectGame(games[0]);
                 }
-            } else if(evt.key == "up" || evt.key == "left") {
+            } else if(evt.key == "up" || evt.key == "left" || (evt.key == "ay" && evt.value < 0)) {
                 if(!!selectedGame) {
                     const index = games.indexOf(selectedGame) - 1;
                     selectGame(games[index < 0 ? games.length - 1 : index]);
