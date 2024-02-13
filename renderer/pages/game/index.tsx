@@ -2,8 +2,8 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import useInput from '../../components/GamepadAPI';
 import { useEffect, useState } from 'react';
-import { nativeImage } from 'electron';
 
+const isProd: boolean = process.env.NODE_ENV === 'production';
 const TIMER_INTERVAL = 100;
 
 const GamePage: NextPage = () => {
@@ -26,7 +26,7 @@ const GamePage: NextPage = () => {
       const time = (timeLeft: number) => {
         setTimeLeft(timeLeft)
         if(timeLeft <= 0) {
-          window.location.href = "/home";
+          window.location.href = isProd ? "app://./home.html" : "/home";
         } else {
           setDelay(setTimeout(() => time(timeLeft - TIMER_INTERVAL), TIMER_INTERVAL));
         }

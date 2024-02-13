@@ -6,7 +6,8 @@ import React, { useEffect, useState } from 'react';
 
 import useInput from "../components/GamepadAPI";
 import { useRouter } from 'next/router';
-import { setEnvironmentData } from 'worker_threads';
+
+const isProd: boolean = process.env.NODE_ENV === 'production';
 
 const Root = styled('div')(({ theme }) => {
     return {
@@ -14,6 +15,10 @@ const Root = styled('div')(({ theme }) => {
         paddingTop: theme.spacing(4),
     };
 })
+
+const gameUrl = (id: string) => {
+    return isProd ? `app://./game.html?id=${id}` : `/game?id=${id}`;
+}
 
 function Home() {
     const router = useRouter();
@@ -51,7 +56,7 @@ function Home() {
         // Button down
         if(evt.value == 1) {
             if(evt.key == "a" && !!selectedGame) {
-                window.location.href = `/game?id=${selectedGame.embed}`;
+                window.location.href = gameUrl(selectedGame.embed);
             } else if(evt.key == "down" || evt.key == "right" || (evt.key == "ay" && evt.value > 0)) {
                 if(!!selectedGame) {
                     const index = games.indexOf(selectedGame) + 1;
@@ -142,7 +147,7 @@ function Home() {
                                 onMouseOver={() => setSelectedGame(g)}
                                 onMouseOut={() => setSelectedGame(null)}
                                 style={{ width: '325', margin: 'auto', display: "flex", flexDirection: "column", padding: 5, paddingTop: 15 }}
-                                href={`/game?id=${g.embed}`}>
+                                href={gameUrl(g.embed)}>
                             <img src={g.cover} style={{ maxWidth: "95%" }} />
                             <Typography>{g.title}</Typography>
                         </Button>
