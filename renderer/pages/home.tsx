@@ -38,7 +38,7 @@ function Home() {
         "down": { keyCode: "ArrowDown" },
         "ax": { analogAxis: 0 },
         "ay": { analogAxis: 1 },
-        "home": { keyCode: "Esc", buttonIndex: 6 },
+        "home": { keyCode: "Escape", buttonIndex: 6 },
         "a": { keyCode: "j", buttonIndex: 3 },
         "b": { keyCode: "k", buttonIndex: 1 },
         "x": { keyCode: "l", buttonIndex: 2 },
