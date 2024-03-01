@@ -29,9 +29,7 @@ function Home() {
     const [selectedGame, setSelectedGame] = useState(null);
     const [evt, setEvt] = useState({key: "", value: -1});
 
-    const [games, setGames] = useState([
-        { "link": "https://jingruchenmax.itch.io/arcade-key-binding", "title": "arcade key binding by jingruchenmax", "embed": "9710961", "cover": "https://avatars.githubusercontent.com/u/36019727?v=4" },
-    ]);
+    const [games, setGames] = useState([]);
 
     // TODO: Fetch game info from remote
     // useEffect(() => {
@@ -80,10 +78,10 @@ function Home() {
         "right": { keyCode: "ArrowRight" },
         "up": { keyCode: "ArrowUp" },
         "down": { keyCode: "ArrowDown" },
-        "ax": { analogAxis: 0 },
+        "ax": { analogAxis: 2 },
         "ay": { analogAxis: 1 },
         "home": { keyCode: "Escape", buttonIndex: 6 },
-        "a": { keyCode: "j", buttonIndex: 0 },
+        "a": { keyCode: "j", buttonIndex: 3 },
         "b": { keyCode: "k", buttonIndex: 1 },
         "x": { keyCode: "l", buttonIndex: 2 },
     }, (evt) => {
@@ -128,15 +126,18 @@ function Home() {
             </Head>
             <Root>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 10, alignContent: "center" }}>
-                    <img height="150" src="/images/imgd.png" />
-                    <img height="120" style={{ borderRadius: 5 }} src="/images/qr-code.png" />
-                    <img height="140" src="/images/joybox.png" />
+                    <img height="250" src="/images/imgd.png" />
+                    <img height="220" style={{ borderRadius: 5 }} src="/images/qr-code.png" />
+                    <img height="240" src="/images/joybox.png" />
                 </div>
-                <Typography variant="h4" gutterBottom>
-                    IMGD Arcade
-                </Typography>
+                <div style={{background: "black", width: "100%", paddingTop: 15, paddingBottom: 5}}>
+                    <Typography variant="h3" gutterBottom>
+                        IMGD Arcade <sup style={{fontSize: 20}}>v2.0-beta</sup>
+                    </Typography>
+                </div>
+                <br/>
                 <Typography variant="subtitle1" gutterBottom>
-                    https://imgdhub.wpi.edu/lore/arcade
+                    Add your games at:  https://imgdhub.wpi.edu/app/arcade
                 </Typography>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, justifyContent: "center", alignItems: "center" }}>
                     {loading && <div className='lds-dual-ring'></div>}
@@ -152,6 +153,12 @@ function Home() {
                             <Typography>{g.title}</Typography>
                         </Button>
                     </div>)}
+                    {games.length <= 0 && <Typography variant="h5">
+                        <br/><br/>
+                        No Games Available
+                        <br/><br/>
+                        Want to add your own? Check out the link or QR code above!    
+                    </Typography>}
                 </div>
             </Root>
         </React.Fragment>
