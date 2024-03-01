@@ -7,10 +7,10 @@ const theme = createTheme({
         mode: "dark",
         primary: {
           main: '#ac2a38',
-          dark: '#34383B',
+          dark: '#4285ce',
         },
         secondary: {
-          main: '#34383B',
+          main: '#4285ce',
         },
     },
     typography: {
