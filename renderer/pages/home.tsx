@@ -87,7 +87,7 @@ function Home() {
     }, (evt) => {
         console.log(evt);
         setEvt(evt);
-    });
+    }, true);
 
     return (
         <React.Fragment>

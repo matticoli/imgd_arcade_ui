@@ -39,8 +39,17 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
           }
         }
       });
-      if(debug)
-        console.log(gp.buttons);
+      if(debug) {
+        let pressedButtons = [];
+        try {
+          pressedButtons = gp.buttons.map((b, i) => {return {idx: i, val: b.value}}).filter(b=> b.val != 0);
+        } catch(err) {
+          console.log("Error getting buttons: ", err)
+        }
+        if(pressedButtons.length > 0) {
+          console.log(pressedButtons);
+        }
+      }
     }
 
     useEffect(() => {
