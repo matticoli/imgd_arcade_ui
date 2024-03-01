@@ -78,10 +78,10 @@ function Home() {
         "right": { keyCode: "ArrowRight" },
         "up": { keyCode: "ArrowUp" },
         "down": { keyCode: "ArrowDown" },
-        "ax": { analogAxis: 2 },
+        "ax": { analogAxis: 0 },
         "ay": { analogAxis: 1 },
-        "home": { keyCode: "Escape", buttonIndex: 6 },
-        "a": { keyCode: "j", buttonIndex: 3 },
+        "home": { keyCode: "Escape", buttonIndex: 11 },
+        "a": { keyCode: "j", buttonIndex: 4 },
         "b": { keyCode: "k", buttonIndex: 1 },
         "x": { keyCode: "l", buttonIndex: 2 },
     }, (evt) => {
