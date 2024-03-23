@@ -5,7 +5,9 @@ import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 
 import useInput from "../components/GamepadAPI";
+import { db } from '../lib/fb';
 import { useRouter } from 'next/router';
+import { collection, getDocs, query } from 'firebase/firestore';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -26,20 +28,18 @@ function Home() {
     const [loading, setLoading] = React.useState(false);
     const handleClose = () => setOpen(false);
     const handleClick = () => setOpen(true);
+    const [games, setGames] = useState([]);
     const [selectedGame, setSelectedGame] = useState(null);
     const [evt, setEvt] = useState({key: "", value: -1});
 
-    const [games, setGames] = useState([]);
 
-    // TODO: Fetch game info from remote
-    // useEffect(() => {
-    //     fetch("/api/gameinfo").then(async (res) => {
-    //         setGames((await res.json()).games);
-    //         setLoading(false);
-    //     }).catch(() => {
-    //         setLoading(false);
-    //     });
-    // }, []);
+    useEffect(() => {
+        const q = query(collection(db, "/games"));
+        getDocs(q).then((docs) => {
+            const fetchedGames = docs.docs.map(doc => doc.data());
+            setGames(fetchedGames);
+        });
+    }, []);
 
     const selectGame = (game) => {
         setSelectedGame(game);
