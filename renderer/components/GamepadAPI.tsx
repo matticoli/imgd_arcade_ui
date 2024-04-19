@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 interface InputAxis {
   keyCode?: string,
   buttonIndex?: number,
+  analogAxis?: number,
+  invert?: boolean,
 }
 interface InputEvent {
   key: string,
@@ -17,24 +19,37 @@ const dont: InputEventHandler = (evt: InputEvent): void => {};
 
 const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug: boolean = false) => {
     const [gamepadPollInterval, setGamepadPollInterval] = useState(null);
-    const gamepad = useRef<InputState>({});
     const keeb = useRef<InputState>({});
     const inputState = useRef<InputState>({});
 
     const pollGamepad = () => {
       const gp = navigator.getGamepads()[0];
-      Object.entries(config).map(([axisKey, {buttonIndex}]) => {
-        if(buttonIndex) {
+      Object.entries(config).map(([axisKey, {buttonIndex, analogAxis, invert}]) => {
+        if(analogAxis) {
+          const newVal = (invert ? -1 : 1)*Math.round(gp.axes[analogAxis]);
+          if(inputState.current[axisKey] != newVal) {
+            inputState.current[axisKey] = newVal;
+            handler({key: axisKey, value: newVal});
+          }
+        } else if(buttonIndex) {
           const newVal = gp.buttons[buttonIndex].value;
-          if(gamepad.current[buttonIndex] != newVal) {
-            gamepad.current[axisKey] = newVal;
+          if(inputState.current[axisKey] != newVal) {
             inputState.current[axisKey] = newVal;
             handler({key: axisKey, value: newVal});
           }
         }
       });
-      if(debug)
-        console.log(gp.buttons);
+      if(debug) {
+        let pressedButtons = [];
+        try {
+          pressedButtons = gp.buttons.map((b, i) => {return {idx: i, val: b.value}}).filter(b=> b.val != 0);
+        } catch(err) {
+          console.log("Error getting buttons: ", err)
+        }
+        if(pressedButtons.length > 0) {
+          console.log(pressedButtons);
+        }
+      }
     }
 
     useEffect(() => {
@@ -54,7 +69,6 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
       }
 
       function handleKeyEvent(evt: KeyboardEvent) {
-        // TODO: check config and call event for keycode
         if(evt.repeat) {
           // Drop repeat events
           return;
@@ -91,7 +105,7 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
         window.removeEventListener('keyup', handleKeyEvent);
       };
     }, [gamepadPollInterval]);
-    return {inputState, keyboard: keeb, gamepad};
+    return {inputState, keyboard: keeb};
 }
 
 export default useInput;

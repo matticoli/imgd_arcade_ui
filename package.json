@@ -2,17 +2,20 @@
   "private": true,
   "name": "imgd-arcade",
   "description": "IMGD Arcade UI",
-  "version": "0.0.1",
+  "version": "0.0.8",
   "author": "Mikel Matticoli",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
+    "next": "next dev renderer",
     "build": "nextron build",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "electron-serve": "^1.1.0",
-    "electron-store": "^8.1.0"
+    "electron-store": "^8.1.0",
+    "fetch": "^1.1.0",
+    "firebase": "^10.9.0"
   },
   "devDependencies": {
     "@emotion/cache": "^11.10.3",

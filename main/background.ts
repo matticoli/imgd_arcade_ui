@@ -1,4 +1,5 @@
-import { app } from 'electron';
+import { app, session } from 'electron';
+import electron from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 
@@ -12,6 +13,17 @@ if (isProd) {
 
 (async () => {
   await app.whenReady();
+
+  session.defaultSession.setDevicePermissionHandler((_) => true);
+  session.defaultSession.setPermissionCheckHandler((_) => true);
+
+  const filter = {
+    urls: ['*://*.google.com/*']
+  };
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+      details.requestHeaders['Origin'] = null;
+      callback({ requestHeaders: details.requestHeaders })
+  });
 
   const mainWindow = createWindow('main', {
     width: 1000,
