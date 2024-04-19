@@ -1,7 +1,7 @@
 name: Build and store snap package
 on:
   push:
-    branches: ['master', 'v1']
+    branches: ['master', 'main']
 jobs:
   build:
     runs-on: ubuntu-latest
