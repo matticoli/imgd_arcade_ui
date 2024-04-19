@@ -38,12 +38,18 @@ const GamePage: NextPage = () => {
       setDelay(undefined);
       setTimeLeft(5000);
     }
-  }, [evt])
+  }, [evt]);
 
   return <>
+    <style>{`
+      html {
+        overflow: hidden;
+      }
+    `}
+    </style>
     <div style={{ width: "100vw", height: "100vh", backgroundColor: "#333333" }}>
-      <p>Hold top left button for {!!delay ? <b>{timeLeft.toFixed(1)}</b> : " 5 "} seconds to go return to game selection screen</p>
-      <iframe style={{ border: "none", marginTop: "5%" }} width="100%" height="90%" src={`https://itch.io/embed-upload/${id}?color=333333`}></iframe>
+      <p style={{paddingLeft: 160, paddingTop: 15}}>Hold top left button for {!!delay ? <b>{timeLeft.toFixed(1)}</b> : " 5 "} seconds to go return to game selection screen</p>
+      <iframe style={{ border: "none" }} width="100%" height="90%" src={`https://itch.io/embed-upload/${id}?color=333333`}></iframe>
     </div>
   </>
 }
