@@ -18,8 +18,8 @@ const Root = styled('div')(({ theme }) => {
     };
 })
 
-const gameUrl = (id: string) => {
-    return isProd ? `app://./game.html?id=${id}` : `/game?id=${id}`;
+const gameUrl = (embed: string) => {
+    return isProd ? `app://./game.html?embed=${embed}` : `/game?embed=${embed}`;
 }
 
 function Home() {
@@ -30,7 +30,7 @@ function Home() {
     const handleClick = () => setOpen(true);
     const [games, setGames] = useState([]);
     const [selectedGame, setSelectedGame] = useState(null);
-    const [evt, setEvt] = useState({key: "", value: -1});
+    const [evt, setEvt] = useState({ key: "", value: -1 });
 
 
     useEffect(() => {
@@ -43,29 +43,44 @@ function Home() {
 
     const selectGame = (game) => {
         setSelectedGame(game);
+        console.log("Selected "+games.indexOf(game))
         try {
             document.getElementById(`game-${game.embed}`).focus();
-        } catch(e) {
+        } catch (e) {
             console.error(e);
         }
     }
 
     useEffect(() => {
         // Button down
-        if(evt.value == 1) {
-            if(evt.key == "a" && !!selectedGame) {
+        if (evt.value == 1) {
+            if (evt.key == "a" && !!selectedGame) {
                 window.location.href = gameUrl(selectedGame.embed);
-            } else if(evt.key == "down" || evt.key == "right" || (evt.key == "ay" && evt.value > 0)) {
-                if(!!selectedGame) {
+            } else if (evt.key == "down" || (evt.key == "ay" && evt.value > 0)) {
+                if (!!selectedGame) {
+                    const index = games.indexOf(selectedGame) + 3;
+                    selectGame(games[index >= games.length ? index % 3 : index]);
+                } else {
+                    selectGame(games[0]);
+                }
+            } else if (evt.key == "right" || (evt.key == "ax" && evt.value > 0)) {
+                if (!!selectedGame) {
                     const index = games.indexOf(selectedGame) + 1;
                     selectGame(games[index >= games.length ? 0 : index]);
                 } else {
                     selectGame(games[0]);
                 }
-            } else if(evt.key == "up" || evt.key == "left" || (evt.key == "ay" && evt.value < 0)) {
-                if(!!selectedGame) {
+            } else if (evt.key == "left" || (evt.key == "ax" && evt.value < 0)) {
+                if (!!selectedGame) {
                     const index = games.indexOf(selectedGame) - 1;
                     selectGame(games[index < 0 ? games.length - 1 : index]);
+                } else {
+                    selectGame(games[games.length - 1]);
+                }
+            } else if (evt.key == "up" || (evt.key == "ay" && evt.value < 0)) {
+                if (!!selectedGame) {
+                    const index = games.indexOf(selectedGame) - 3;
+                    selectGame(games[index < 0 ? (games.length + (3 - (games.length % 3))) + index : index]);
                 } else {
                     selectGame(games[games.length - 1]);
                 }
@@ -130,34 +145,59 @@ function Home() {
                     <img height="220" style={{ borderRadius: 5 }} src="/images/qr-code.png" />
                     <img height="240" src="/images/joybox.png" />
                 </div>
-                <div style={{background: "black", width: "100%", paddingTop: 15, paddingBottom: 5}}>
+                <div style={{ background: "black", width: "100%", paddingTop: 15, paddingBottom: 5 }}>
                     <Typography variant="h3" gutterBottom>
-                        IMGD Arcade <sup style={{fontSize: 20}}>v2.0-beta</sup>
+                        IMGD Arcade <sup style={{ fontSize: 20 }}>v0.3</sup>
                     </Typography>
                 </div>
-                <br/>
+                <br />
                 <Typography variant="subtitle1" gutterBottom>
                     Add your games at:  https://imgdhub.wpi.edu/app/arcade
                 </Typography>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, justifyContent: "center", alignItems: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", justifyContent: "center", alignItems: "center" }}>
                     {loading && <div className='lds-dual-ring'></div>}
-                    {games.map(g => <div key={g.embed} style={{ maxWidth: "45%", margin: "2.5%" }}>
-                        <Button variant="contained"
+                    {games.map(g => {
+
+                        const canvas2d = document.createElement("canvas").getContext('2d');
+                        const cover = document.createElement("img");
+                        cover.crossOrigin = "Anonymous";
+                        // document.body.append(cover)
+                        cover.src = g.cover;
+                        canvas2d.drawImage(cover, 0, 0);
+                        const rgb = canvas2d.getImageData(0, 0, 1, 1).data;
+
+                        const coverColor = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+
+                        return <div key={g.embed} style={{ width: "100%", minHeight: 400, padding: "5%" }}>
+                            <Button variant="contained"
                                 color={selectedGame && g.embed == selectedGame.embed ? "secondary" : "primary"}
                                 id={`game-${g.embed}`}
                                 onMouseOver={() => setSelectedGame(g)}
                                 onMouseOut={() => setSelectedGame(null)}
-                                style={{ width: '325', margin: 'auto', display: "flex", flexDirection: "column", padding: 5, paddingTop: 15 }}
+                                style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15 }}
                                 href={gameUrl(g.embed)}>
-                            <img src={g.cover} style={{ maxWidth: "95%" }} />
-                            <Typography>{g.title}</Typography>
-                        </Button>
-                    </div>)}
+                                <span style={{
+                                    width: "100%",
+                                    height: 325,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    backgroundImage: `url(${g.cover})`,
+                                    backgroundSize: "contain",
+                                    backgroundRepeat: "no-repeat",
+                                    backgroundPosition: "center",
+                                    backgroundColor: "#121212",
+                                }} />
+                                <Typography>{g.title}</Typography>
+                            </Button>
+                        </div>
+                    }
+                    )}
                     {games.length <= 0 && <Typography variant="h5">
-                        <br/><br/>
+                        <br /><br />
                         No Games Available
-                        <br/><br/>
-                        Want to add your own? Check out the link or QR code above!    
+                        <br /><br />
+                        Want to add your own? Check out the link or QR code above!
                     </Typography>}
                 </div>
             </Root>
