@@ -25,13 +25,14 @@ const useInput = (config: InputConfig, handler: InputEventHandler = dont, debug:
     const pollGamepad = () => {
       const gp = navigator.getGamepads()[0];
       Object.entries(config).map(([axisKey, {buttonIndex, analogAxis, invert}]) => {
-        if(analogAxis) {
+        if(analogAxis != undefined) {
           const newVal = (invert ? -1 : 1)*Math.round(gp.axes[analogAxis]);
+          // console.log(analogAxis, " ", newVal);
           if(inputState.current[axisKey] != newVal) {
             inputState.current[axisKey] = newVal;
             handler({key: axisKey, value: newVal});
           }
-        } else if(buttonIndex) {
+        } else if(buttonIndex != undefined) {
           const newVal = gp.buttons[buttonIndex].value;
           if(inputState.current[axisKey] != newVal) {
             inputState.current[axisKey] = newVal;

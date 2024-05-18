@@ -43,7 +43,6 @@ function Home() {
 
     const selectGame = (game) => {
         setSelectedGame(game);
-        console.log("Selected "+games.indexOf(game))
         try {
             document.getElementById(`game-${game.embed}`).focus();
         } catch (e) {
@@ -53,7 +52,7 @@ function Home() {
 
     useEffect(() => {
         // Button down
-        if (evt.value == 1) {
+        if (Math.abs(evt.value) == 1) {
             if (evt.key == "a" && !!selectedGame) {
                 window.location.href = gameUrl(selectedGame.embed);
             } else if (evt.key == "down" || (evt.key == "ay" && evt.value > 0)) {
