@@ -53,7 +53,7 @@ function Home() {
     useEffect(() => {
         // Button down
         if (Math.abs(evt.value) == 1) {
-            if (evt.key == "a" && !!selectedGame) {
+            if ((evt.key == "k" || evt.key == "l") && !!selectedGame) {
                 window.location.href = gameUrl(selectedGame.embed);
             } else if (evt.key == "down" || (evt.key == "ay" && evt.value > 0)) {
                 if (!!selectedGame) {
@@ -95,9 +95,9 @@ function Home() {
         "ax": { analogAxis: 0 },
         "ay": { analogAxis: 1 },
         "home": { keyCode: "Escape", buttonIndex: 11 },
-        "a": { keyCode: "j", buttonIndex: 4 },
-        "b": { keyCode: "k", buttonIndex: 1 },
-        "x": { keyCode: "l", buttonIndex: 2 },
+        "j": { keyCode: "j", buttonIndex: 3 },
+        "k": { keyCode: "k", buttonIndex: 4 },
+        "l": { keyCode: "l", buttonIndex: 1 },
     }, (evt) => {
         console.log(evt);
         setEvt(evt);
