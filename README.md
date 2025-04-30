@@ -1,4 +1,4 @@
-<p align="center"><img src="https://i.imgur.com/flcMvDC.png"></p>
+[![Build and store snap package](https://github.com/matticoli/imgd_arcade_ui/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/matticoli/imgd_arcade_ui/actions/workflows/build.yml)
 
 ## Usage
 
