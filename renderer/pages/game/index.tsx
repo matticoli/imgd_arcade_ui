@@ -18,7 +18,7 @@ const GamePage: NextPage = () => {
   
   // Construct the proper itch.io embed URL from gameId
   const embed: string = parsedGameId
-    ? `https://itch.io/embed-upload/${parsedGameId}?color=333333&arcade=1`
+    ? `https://itch.io/embed-upload/${parsedGameId}?color=333333&arcade`
     : embedFallback;
 
   const [delay, setDelay] = useState<NodeJS.Timeout | undefined>(undefined);
