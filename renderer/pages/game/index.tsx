@@ -8,7 +8,18 @@ const TIMER_INTERVAL = 100;
 
 const GamePage: NextPage = () => {
   const router = useRouter();
-  const embed: string = ""+router.query.embed;
+  const gameId: string = ""+router.query.gameId;
+  const embedFallback: string = ""+router.query.embed;
+  
+  // Parse gameId to only use the part before the first underscore
+  const parsedGameId = gameId && gameId !== "undefined" 
+    ? gameId.split("_")[0] 
+    : null;
+  
+  // Construct the proper itch.io embed URL from gameId
+  const embed: string = parsedGameId
+    ? `https://itch.io/embed-upload/${parsedGameId}?color=333333&arcade=1`
+    : embedFallback;
 
   const [delay, setDelay] = useState<NodeJS.Timeout | undefined>(undefined);
   const [timeLeft, setTimeLeft] = useState<number>(new Date().getTime());
@@ -49,7 +60,7 @@ const GamePage: NextPage = () => {
     </style>
     <div style={{ width: "100vw", height: "100vh", backgroundColor: "#333333" }}>
       <p style={{paddingLeft: 160, paddingTop: 15}}>Hold top left button for {!!delay ? <b>{timeLeft.toFixed(1)}</b> : " 5 "} seconds to go return to game selection screen</p>
-      <iframe style={{ border: "none" }} width="100%" height="90%" src={`${embed.split("?")[0]}?arcade`}></iframe>
+      <iframe style={{ border: "none", backgroundColor: "#333333" }} width="100%" height="90%" src={embed}></iframe>
     </div>
   </>
 }

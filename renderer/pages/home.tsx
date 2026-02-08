@@ -18,8 +18,11 @@ const Root = styled('div')(({ theme }) => {
     };
 })
 
-const gameUrl = (embed: string) => {
-    return isProd ? `app://./game.html?embed=${embed}` : `/game?embed=${embed}`;
+const gameUrl = (game: any) => {
+    const params = new URLSearchParams();
+    if (game.gameId) params.append('gameId', game.gameId);
+    if (game.embed) params.append('embed', game.embed);
+    return isProd ? `app://./game.html?${params.toString()}` : `/game?${params.toString()}`;
 }
 
 function Home() {
@@ -54,7 +57,7 @@ function Home() {
         // Button down
         if (Math.abs(evt.value) == 1) {
             if ((evt.key == "k" || evt.key == "l") && !!selectedGame) {
-                window.location.href = gameUrl(selectedGame.embed);
+                window.location.href = gameUrl(selectedGame);
             } else if (evt.key == "down" || (evt.key == "ay" && evt.value > 0)) {
                 if (!!selectedGame) {
                     const index = games.indexOf(selectedGame) + 3;
@@ -174,7 +177,7 @@ function Home() {
                                 onMouseOver={() => setSelectedGame(g)}
                                 onMouseOut={() => setSelectedGame(null)}
                                 style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15 }}
-                                href={gameUrl(g.embed)}>
+                                href={gameUrl(g)}>
                                 <span style={{
                                     width: "100%",
                                     height: 325,
