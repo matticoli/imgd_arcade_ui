@@ -40,6 +40,10 @@ const GamePage: NextPage = () => {
     }
   }, [evt]);
 
+  const preload = typeof window !== 'undefined'
+    ? (window as any).electronPaths?.itchPreload
+    : undefined;
+
   return <>
     <style>{`
       html {
@@ -48,10 +52,19 @@ const GamePage: NextPage = () => {
     `}
     </style>
     <div style={{ width: "100vw", height: "100vh", backgroundColor: "#333333" }}>
-      <p style={{paddingLeft: 160, paddingTop: 15}}>Hold top left button for {!!delay ? <b>{timeLeft.toFixed(1)}</b> : " 5 "} seconds to go return to game selection screen</p>
-      <iframe style={{ border: "none" }} width="100%" height="90%" src={`${embed.split("?")[0]}?arcade`}></iframe>
+      <p style={{ paddingLeft: 160, paddingTop: 15 }}>
+        Hold top left button for {!!delay ? <b>{timeLeft.toFixed(1)}</b> : " 5 "} seconds to go return to game selection screen
+      </p>
+
+      {embed ? (
+        <webview
+          src={`${embed}${embed.includes("?") ? "&" : "?"}arcade`}
+          style={{ width: "100%", height: "90%", border: "none", backgroundColor: "#333333" }}
+          preload={preload}
+          webpreferences="contextIsolation=yes"
+        />
+      ) : null}
     </div>
   </>
 }
-
 export default GamePage;
