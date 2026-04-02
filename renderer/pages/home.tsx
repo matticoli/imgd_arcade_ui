@@ -35,14 +35,31 @@ function Home() {
     const [selectedGame, setSelectedGame] = useState(null);
     const [evt, setEvt] = useState({ key: "", value: -1 });
 
-
-    useEffect(() => {
-        const q = query(collection(db, "/games"));
-        getDocs(q).then((docs) => {
+    const fetchGames = async () => {
+        setLoading(true);
+        try {
+            const q = query(collection(db, "/games"));
+            const docs = await getDocs(q);
             const fetchedGames = docs.docs.map(doc => doc.data());
             setGames(fetchedGames);
-        });
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchGames();
     }, []);
+
+    useEffect(() => {
+        if (games.length > 0) return;
+
+        const intervalId = setInterval(() => {
+            fetchGames();
+        }, 15000);
+
+        return () => clearInterval(intervalId);
+    }, [games.length]);
 
     const selectGame = (game) => {
         setSelectedGame(game);
