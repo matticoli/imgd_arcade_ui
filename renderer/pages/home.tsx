@@ -91,6 +91,15 @@ function shuffleByDay(games: any[]): any[] {
         .map(({ game }) => game);
 }
 
+// Games flagged with `test: true` always go to the bottom (stable, so they keep their shuffled order)
+function orderGames(games: any[]): any[] {
+    const shuffled = shuffleByDay(games);
+    return [
+        ...shuffled.filter(g => g.test !== true),
+        ...shuffled.filter(g => g.test === true),
+    ];
+}
+
 function Home() {
     const [loading, setLoading] = React.useState(false);
     const [selectedGame, setSelectedGame] = useState(null);
@@ -118,7 +127,7 @@ function Home() {
             if(fetchedGames.length == 0)
                 throw new Error("Game list is empty");
 
-            setGames(shuffleByDay(fetchedGames));
+            setGames(orderGames(fetchedGames));
         } finally {
             setLoading(false);
         }
