@@ -66,15 +66,29 @@ function seededRandom(seed: number) {
     };
 }
 
-function shuffleByDay<T>(items: T[], key: (item: T) => string): T[] {
-    // Sort by a stable key first so the result doesn't depend on fetch order
-    const result = [...items].sort((a, b) => key(a).localeCompare(key(b)));
+// gameIds start with the itch.io upload ID (e.g. "16419641" or "16419641_<uid>_<epochMs>").
+// Itch assigns upload IDs in increasing order, so it works as an "added" recency proxy.
+function recencyKey(game: any): number {
+    return parseInt(String(game.gameId ?? ""), 10) || 0;
+}
+
+// Every RECENCY_HALF_LIFE positions older, a game's weight halves
+const RECENCY_HALF_LIFE = 5;
+
+// Daily-seeded weighted shuffle (Efraimidis–Spirakis): newer games tend to appear
+// higher, but the order still varies day to day.
+function shuffleByDay(games: any[]): any[] {
+    // Newest first; tie-break on gameId so the result doesn't depend on fetch order
+    const byRecency = [...games].sort((a, b) =>
+        recencyKey(b) - recencyKey(a) || String(a.gameId).localeCompare(String(b.gameId)));
     const random = seededRandom(daySeed());
-    for (let i = result.length - 1; i > 0; i--) {
-        const j = Math.floor(random() * (i + 1));
-        [result[i], result[j]] = [result[j], result[i]];
-    }
-    return result;
+    return byRecency
+        .map((game, rank) => {
+            const weight = Math.pow(0.5, rank / RECENCY_HALF_LIFE);
+            return { game, sortKey: Math.pow(random(), 1 / weight) };
+        })
+        .sort((a, b) => b.sortKey - a.sortKey)
+        .map(({ game }) => game);
 }
 
 function Home() {
@@ -104,7 +118,7 @@ function Home() {
             if(fetchedGames.length == 0)
                 throw new Error("Game list is empty");
 
-            setGames(shuffleByDay(fetchedGames, g => String(g.gameId ?? g.embed ?? "")));
+            setGames(shuffleByDay(fetchedGames));
         } finally {
             setLoading(false);
         }
