@@ -271,7 +271,7 @@ function Home() {
                 </div>
                 <div style={{ background: "black", width: "100%", paddingTop: 15, paddingBottom: 5 }}>
                     <Typography variant="h3" gutterBottom>
-                        IMGD Arcade <sup style={{ fontSize: 20 }}>v0.3</sup>
+                        IMGD Arcade <sup style={{ fontSize: 20 }}>v0.4</sup>
                     </Typography>
                 </div>
                 <br />
