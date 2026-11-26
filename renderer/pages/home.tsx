@@ -335,8 +335,8 @@ function Home() {
                                 // overflow hidden clips the TEST sash to the tile's corner
                                 style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15, overflow: "hidden" }}
                                 href={gameUrl(g)}>
-                                {isTestGame(g) && <Sash label="TEST" color="#f5c518" />}
-                                {isNewGame(g) && <Sash label="NEW" color="#3ddc84" />}
+                                {isTestGame(g) && <Sash label="TEST" color="#b0b0b0" />}
+                                {isNewGame(g) && <Sash label="NEW" color="#f5c518" />}
                                 <span style={{
                                     width: "100%",
                                     height: 325,
