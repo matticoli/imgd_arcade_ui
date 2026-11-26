@@ -44,6 +44,27 @@ const Root = styled('div')(({ theme }) => {
     };
 })
 
+// Diagonal ribbon across a tile's top-left corner; the parent must be position: relative with overflow: hidden
+function TestSash() {
+    return <span style={{
+        position: "absolute",
+        top: 28,
+        left: -42,
+        width: 170,
+        transform: "rotate(-45deg)",
+        background: "#f5c518",
+        color: "#000",
+        fontWeight: "bold",
+        fontSize: 18,
+        letterSpacing: 3,
+        textAlign: "center",
+        padding: "4px 0",
+        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.5)",
+        zIndex: 1,
+        pointerEvents: "none",
+    }}>TEST</span>;
+}
+
 function gameUrl(game: any) {
     const params = new URLSearchParams();
     if (game.gameId) params.append('gameId', game.gameId);
@@ -289,8 +310,10 @@ function Home() {
                                 // NOTE: hovering the causes the selected-color to be darker.
                                 onMouseMove={() => selectGame(g)}
 
-                                style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15 }}
+                                // overflow hidden clips the TEST sash to the tile's corner
+                                style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15, overflow: "hidden" }}
                                 href={gameUrl(g)}>
+                                {g.test === true && <TestSash />}
                                 <span style={{
                                     width: "100%",
                                     height: 325,
