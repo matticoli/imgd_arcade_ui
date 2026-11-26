@@ -45,14 +45,14 @@ const Root = styled('div')(({ theme }) => {
 })
 
 // Diagonal ribbon across a tile's top-left corner; the parent must be position: relative with overflow: hidden
-function TestSash() {
+function Sash({ label, color }: { label: string, color: string }) {
     return <span style={{
         position: "absolute",
         top: 28,
         left: -42,
         width: 170,
         transform: "rotate(-45deg)",
-        background: "#f5c518",
+        background: color,
         color: "#000",
         fontWeight: "bold",
         fontSize: 18,
@@ -62,7 +62,7 @@ function TestSash() {
         boxShadow: "0 2px 6px rgba(0, 0, 0, 0.5)",
         zIndex: 1,
         pointerEvents: "none",
-    }}>TEST</span>;
+    }}>{label}</span>;
 }
 
 function gameUrl(game: any) {
@@ -112,12 +112,34 @@ function shuffleByDay(games: any[]): any[] {
         .map(({ game }) => game);
 }
 
-// Games flagged with `test: true` always go to the bottom (stable, so they keep their shuffled order)
+const NEW_GAME_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+// When the game was added to the arcade, from the "<itchId>_<uid>_<epochMs>" gameId format.
+// Older and manually-entered games have no timestamp and return null.
+function addedAtMs(game: any): number | null {
+    const parts = String(game.gameId ?? "").split("_");
+    const ms = parts.length === 3 ? Number(parts[2]) : NaN;
+    return Number.isFinite(ms) ? ms : null;
+}
+
+function isTestGame(game: any): boolean {
+    return game.test === true;
+}
+
+// Non-test games added to the arcade within the last week
+function isNewGame(game: any): boolean {
+    const added = addedAtMs(game);
+    return !isTestGame(game) && added !== null && Date.now() - added < NEW_GAME_WINDOW_MS;
+}
+
+// New games first (newest first), then everything else in the daily shuffle, then test games
 function orderGames(games: any[]): any[] {
-    const shuffled = shuffleByDay(games);
+    const newGames = games.filter(isNewGame).sort((a, b) => addedAtMs(b) - addedAtMs(a));
+    const shuffled = shuffleByDay(games.filter(g => !isNewGame(g)));
     return [
-        ...shuffled.filter(g => g.test !== true),
-        ...shuffled.filter(g => g.test === true),
+        ...newGames,
+        ...shuffled.filter(g => !isTestGame(g)),
+        ...shuffled.filter(isTestGame),
     ];
 }
 
@@ -313,7 +335,8 @@ function Home() {
                                 // overflow hidden clips the TEST sash to the tile's corner
                                 style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15, overflow: "hidden" }}
                                 href={gameUrl(g)}>
-                                {g.test === true && <TestSash />}
+                                {isTestGame(g) && <Sash label="TEST" color="#f5c518" />}
+                                {isNewGame(g) && <Sash label="NEW" color="#3ddc84" />}
                                 <span style={{
                                     width: "100%",
                                     height: 325,
