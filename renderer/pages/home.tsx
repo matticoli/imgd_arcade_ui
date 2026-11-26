@@ -112,7 +112,7 @@ function shuffleByDay(games: any[]): any[] {
         .map(({ game }) => game);
 }
 
-const NEW_GAME_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+const NEW_GAME_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
 
 // When the game was added to the arcade, from the "<itchId>_<uid>_<epochMs>" gameId format.
 // Older and manually-entered games have no timestamp and return null.
@@ -126,7 +126,7 @@ function isTestGame(game: any): boolean {
     return game.test === true;
 }
 
-// Non-test games added to the arcade within the last week
+// Non-test games added to the arcade within the last two weeks
 function isNewGame(game: any): boolean {
     const added = addedAtMs(game);
     return !isTestGame(game) && added !== null && Date.now() - added < NEW_GAME_WINDOW_MS;
