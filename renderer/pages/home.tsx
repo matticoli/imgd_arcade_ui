@@ -44,11 +44,103 @@ const Root = styled('div')(({ theme }) => {
     };
 })
 
+// Diagonal ribbon across a tile's top-left corner; the parent must be position: relative with overflow: hidden
+function Sash({ label, color }: { label: string, color: string }) {
+    return <span style={{
+        position: "absolute",
+        top: 28,
+        left: -42,
+        width: 170,
+        transform: "rotate(-45deg)",
+        background: color,
+        color: "#000",
+        fontWeight: "bold",
+        fontSize: 18,
+        letterSpacing: 3,
+        textAlign: "center",
+        padding: "4px 0",
+        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.5)",
+        zIndex: 1,
+        pointerEvents: "none",
+    }}>{label}</span>;
+}
+
 function gameUrl(game: any) {
     const params = new URLSearchParams();
     if (game.gameId) params.append('gameId', game.gameId);
     if (game.embed) params.append('embed', game.embed);
     return IS_PROD ? `app://./game.html?${params.toString()}` : `/game?${params.toString()}`;
+}
+
+// Seed derived from the local calendar day (e.g. 20261126), so the order is stable within a day
+function daySeed(date = new Date()) {
+    return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+}
+
+// mulberry32 PRNG: small, fast, deterministic for a given seed
+function seededRandom(seed: number) {
+    return () => {
+        seed = (seed + 0x6D2B79F5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+// gameIds start with the itch.io upload ID (e.g. "16419641" or "16419641_<uid>_<epochMs>").
+// Itch assigns upload IDs in increasing order, so it works as an "added" recency proxy.
+function recencyKey(game: any): number {
+    return parseInt(String(game.gameId ?? ""), 10) || 0;
+}
+
+// Every RECENCY_HALF_LIFE positions older, a game's weight halves
+const RECENCY_HALF_LIFE = 5;
+
+// Daily-seeded weighted shuffle (Efraimidis–Spirakis): newer games tend to appear
+// higher, but the order still varies day to day.
+function shuffleByDay(games: any[]): any[] {
+    // Newest first; tie-break on gameId so the result doesn't depend on fetch order
+    const byRecency = [...games].sort((a, b) =>
+        recencyKey(b) - recencyKey(a) || String(a.gameId).localeCompare(String(b.gameId)));
+    const random = seededRandom(daySeed());
+    return byRecency
+        .map((game, rank) => {
+            const weight = Math.pow(0.5, rank / RECENCY_HALF_LIFE);
+            return { game, sortKey: Math.pow(random(), 1 / weight) };
+        })
+        .sort((a, b) => b.sortKey - a.sortKey)
+        .map(({ game }) => game);
+}
+
+const NEW_GAME_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+
+// When the game was added to the arcade, from the "<itchId>_<uid>_<epochMs>" gameId format.
+// Older and manually-entered games have no timestamp and return null.
+function addedAtMs(game: any): number | null {
+    const parts = String(game.gameId ?? "").split("_");
+    const ms = parts.length === 3 ? Number(parts[2]) : NaN;
+    return Number.isFinite(ms) ? ms : null;
+}
+
+function isTestGame(game: any): boolean {
+    return game.test === true;
+}
+
+// Non-test games added to the arcade within the last two weeks
+function isNewGame(game: any): boolean {
+    const added = addedAtMs(game);
+    return !isTestGame(game) && added !== null && Date.now() - added < NEW_GAME_WINDOW_MS;
+}
+
+// New games first (newest first), then everything else in the daily shuffle, then test games
+function orderGames(games: any[]): any[] {
+    const newGames = games.filter(isNewGame).sort((a, b) => addedAtMs(b) - addedAtMs(a));
+    const shuffled = shuffleByDay(games.filter(g => !isNewGame(g)));
+    return [
+        ...newGames,
+        ...shuffled.filter(g => !isTestGame(g)),
+        ...shuffled.filter(isTestGame),
+    ];
 }
 
 function Home() {
@@ -78,7 +170,7 @@ function Home() {
             if(fetchedGames.length == 0)
                 throw new Error("Game list is empty");
 
-            setGames(fetchedGames);
+            setGames(orderGames(fetchedGames));
         } finally {
             setLoading(false);
         }
@@ -222,7 +314,7 @@ function Home() {
                 </div>
                 <div style={{ background: "black", width: "100%", paddingTop: 15, paddingBottom: 5 }}>
                     <Typography variant="h3" gutterBottom>
-                        IMGD Arcade <sup style={{ fontSize: 20 }}>v0.3</sup>
+                        IMGD Arcade <sup style={{ fontSize: 20 }}>v0.4</sup>
                     </Typography>
                 </div>
                 <br />
@@ -240,8 +332,11 @@ function Home() {
                                 // NOTE: hovering the causes the selected-color to be darker.
                                 onMouseMove={() => selectGame(g)}
 
-                                style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15 }}
+                                // overflow hidden clips the TEST sash to the tile's corner
+                                style={{ display: "flex", flexDirection: "column", gap: 15, padding: 15, paddingTop: 15, paddingBottom: 15, overflow: "hidden" }}
                                 href={gameUrl(g)}>
+                                {isTestGame(g) && <Sash label="TEST" color="#b0b0b0" />}
+                                {isNewGame(g) && <Sash label="NEW" color="#f5c518" />}
                                 <span style={{
                                     width: "100%",
                                     height: 325,
